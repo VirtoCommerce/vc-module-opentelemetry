@@ -4,13 +4,13 @@
   <version>3.800.0</version>
   <version-tag></version-tag>
 
-  <platformVersion>3.876.0</platformVersion>
+  <platformVersion>3.1002.0</platformVersion>
   <dependencies>
     <!--<dependency id="VirtoCommerce.Core" version="3.800.0" />-->
   </dependencies>
 
   <title>VirtoCommerce OpenTelemetry</title>
-  <description>VirtoCommerce OpenTelemetry</description>
+  <description>Provides OpenTelemetry metrics, tracing, and logging via OTLP exporter</description>
 
   <authors>
     <author>Anton Zorya</author>
