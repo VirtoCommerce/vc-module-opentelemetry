@@ -1,0 +1,41 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32630.192
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{D39D61A9-03D6-4B87-A126-38DFB76F0A1E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.OpenTelemetry.Web", "src\VirtoCommerce.OpenTelemetry.Web\VirtoCommerce.OpenTelemetry.Web.csproj", "{BBE24FA0-78C7-4545-AD00-E46F2A8727BD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{DF3F2955-6595-4664-88DD-229DDA55CF83}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.gitignore = .gitignore
+		Directory.Build.props = Directory.Build.props
+		LICENSE = LICENSE
+		module.ignore = module.ignore
+		README.md = README.md
+		VirtoCommerce.OpenTelemetry.sln.DotSettings = VirtoCommerce.OpenTelemetry.sln.DotSettings
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BBE24FA0-78C7-4545-AD00-E46F2A8727BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BBE24FA0-78C7-4545-AD00-E46F2A8727BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BBE24FA0-78C7-4545-AD00-E46F2A8727BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BBE24FA0-78C7-4545-AD00-E46F2A8727BD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{BBE24FA0-78C7-4545-AD00-E46F2A8727BD} = {D39D61A9-03D6-4B87-A126-38DFB76F0A1E}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6CBF9CF3-E119-4F7F-8D7D-B25952A361CF}
+	EndGlobalSection
+EndGlobal
