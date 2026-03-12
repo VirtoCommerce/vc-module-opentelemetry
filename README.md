@@ -96,8 +96,11 @@ src/
 
 ## License
 
-Copyright (c) Virto Solutions LTD. All rights reserved.
+Copyright (c) Virto Solutions LTD.  All rights reserved.
 
-Licensed under the Virto Commerce Open Software License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+Licensed under the Virto Commerce Open Software License (the "License"); you
+may not use this file except in compliance with the License. You may
+obtain a copy of the License at
 
-<https://virtocommerce.com/open-source-license>
+http://virtocommerce.com/opensourcelicense
+
