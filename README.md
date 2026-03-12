@@ -1,4 +1,4 @@
-# VirtoCommerce OpenTelemetry Module
+# Open Telemetry Module
 
 This module provides OpenTelemetry observability for VirtoCommerce Platform — metrics, distributed tracing, and structured logging via OTLP exporter.
 
