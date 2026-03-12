@@ -9,7 +9,7 @@
     <!--<dependency id="VirtoCommerce.Core" version="3.800.0" />-->
   </dependencies>
 
-  <title>VirtoCommerce Open Telemetry</title>
+  <title>Open Telemetry</title>
   <description>Provides Open Telemetry metrics, tracing, and logging via OTLP exporter</description>
 
   <authors>
