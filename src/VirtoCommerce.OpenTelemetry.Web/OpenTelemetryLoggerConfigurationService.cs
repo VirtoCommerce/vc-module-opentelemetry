@@ -10,26 +10,19 @@ namespace VirtoCommerce.OpenTelemetry.Web;
 /// Configures Serilog to send logs to OpenTelemetry via OTLP.
 /// Integrates with the platform's Serilog configuration pipeline.
 /// </summary>
-public class OpenTelemetryLoggerConfigurationService : ILoggerConfigurationService
+public class OpenTelemetryLoggerConfigurationService(IConfiguration configuration) : ILoggerConfigurationService
 {
-    private readonly IConfiguration _configuration;
-
-    public OpenTelemetryLoggerConfigurationService(IConfiguration configuration)
-    {
-        _configuration = configuration;
-    }
-
     public void Configure(LoggerConfiguration loggerConfiguration)
     {
-        var otlpEndpoint = _configuration["OpenTelemetry:Endpoint"];
-        if (string.IsNullOrWhiteSpace(otlpEndpoint))
+        var endpoint  = configuration["OpenTelemetry:Endpoint"];
+        if (string.IsNullOrWhiteSpace(endpoint ))
         {
             return;
         }
 
         loggerConfiguration.WriteTo.OpenTelemetry(options =>
         {
-            options.Endpoint = otlpEndpoint;
+            options.Endpoint = endpoint ;
             options.Protocol = OtlpProtocol.Grpc;
 
             // Include trace context for correlation with distributed traces
@@ -37,7 +30,7 @@ public class OpenTelemetryLoggerConfigurationService : ILoggerConfigurationServi
                                    IncludedData.MessageTemplateTextAttribute |
                                    IncludedData.MessageTemplateMD5HashAttribute;
 
-            var serviceName = _configuration["OpenTelemetry:ServiceName"] ?? "VirtoCommerce.Platform";
+            var serviceName = configuration["OpenTelemetry:ServiceName"] ?? "VirtoCommerce.Platform";
             options.ResourceAttributes = new Dictionary<string, object>
             {
                 ["service.name"] = serviceName,

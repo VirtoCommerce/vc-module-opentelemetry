@@ -13,7 +13,7 @@ public static class ServiceCollectionExtensions
         // Note: OpenTelemetry logging is integrated via Serilog sink (see OpenTelemetryLoggerConfigurationService)
         // This avoids duplicate logging providers and follows VirtoCommerce Platform patterns
 
-        var otelBuilder = services.AddOpenTelemetry()
+        var builder = services.AddOpenTelemetry()
             .WithMetrics(metrics =>
             {
                 metrics.AddAspNetCoreInstrumentation()
@@ -44,7 +44,7 @@ public static class ServiceCollectionExtensions
         // Add OTLP exporter if endpoint is configured
         if (!string.IsNullOrWhiteSpace(configuration["OpenTelemetry:Endpoint"]))
         {
-            otelBuilder.UseOtlpExporter();
+            builder.UseOtlpExporter();
         }
 
         return services;
