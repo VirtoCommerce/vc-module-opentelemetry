@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <module>
   <id>VirtoCommerce.OpenTelemetry</id>
-  <version>3.800.0</version>
-  <version-tag></version-tag>
+  <version>3.1000.0</version>
+  <version-tag />
 
-  <platformVersion>3.876.0</platformVersion>
-  <dependencies>
-    <!--<dependency id="VirtoCommerce.Core" version="3.800.0" />-->
-  </dependencies>
+  <platformVersion>3.1002.0</platformVersion>
+  <dependencies />
 
-  <title>VirtoCommerce OpenTelemetry</title>
-  <description>VirtoCommerce OpenTelemetry</description>
+  <title>Open Telemetry</title>
+  <description>Provides Open Telemetry metrics, tracing, and logging via OTLP exporter</description>
 
   <authors>
     <author>Anton Zorya</author>
@@ -20,7 +18,7 @@
   </owners>
 
   <projectUrl>https://github.com/VirtoCommerce/vc-module-opentelemetry</projectUrl>
-<requireLicenseAcceptance>false</requireLicenseAcceptance>
+  <requireLicenseAcceptance>false</requireLicenseAcceptance>
 
   <assemblyFile>VirtoCommerce.OpenTelemetry.Web.dll</assemblyFile>
   <moduleType>VirtoCommerce.OpenTelemetry.Web.Module, VirtoCommerce.OpenTelemetry.Web</moduleType>

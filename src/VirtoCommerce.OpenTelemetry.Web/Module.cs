@@ -1,32 +1,33 @@
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using VirtoCommerce.Platform.Core.Logger;
 using VirtoCommerce.Platform.Core.Modularity;
-using VirtoCommerce.Platform.Core.Security;
-using VirtoCommerce.Platform.Core.Settings;
 
 namespace VirtoCommerce.OpenTelemetry.Web;
 
-public class Module : IModule
+public class Module : IModule, IHasConfiguration
 {
     public ManifestModuleInfo ModuleInfo { get; set; }
+    public IConfiguration Configuration { get; set; }
 
     public void Initialize(IServiceCollection serviceCollection)
     {
-        // Register services
-        //serviceCollection.AddTransient<IMyService, MyService>();
+        if (!Configuration.GetValue("OpenTelemetry:Enabled", false))
+        {
+            return;
+        }
+
+        // Integrate Serilog → OpenTelemetry logging via platform's Serilog pipeline
+        serviceCollection.AddTransient<ILoggerConfigurationService, OpenTelemetryLoggerConfigurationService>();
+
+        // Register OpenTelemetry metrics, tracing, and OTLP exporter
+        serviceCollection.AddOpenTelemetryModule(Configuration);
     }
 
     public void PostInitialize(IApplicationBuilder appBuilder)
     {
-        var serviceProvider = appBuilder.ApplicationServices;
-
-        // Register settings
-        var settingsRegistrar = serviceProvider.GetRequiredService<ISettingsRegistrar>();
-        settingsRegistrar.RegisterSettings(ModuleConstants.Settings.AllSettings, ModuleInfo.Id);
-
-        // Register permissions
-        var permissionsRegistrar = serviceProvider.GetRequiredService<IPermissionsRegistrar>();
-        permissionsRegistrar.RegisterPermissions(ModuleInfo.Id, "OpenTelemetry", ModuleConstants.Security.Permissions.AllPermissions);
+        // Nothing to do here
     }
 
     public void Uninstall()

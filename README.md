@@ -1,58 +1,106 @@
-# OpenTelemetry
+# Open Telemetry Module
 
-## Overview
+This module provides OpenTelemetry observability for VirtoCommerce Platform — metrics, distributed tracing, and structured logging via OTLP exporter.
 
-Short overview of what the new module is.
+## Features
 
-- What is the new or updated experience?
+- **Metrics**: ASP.NET Core, HTTP Client, Runtime, Process, EF Core, Elasticsearch, Redis instrumentation
+- **Distributed Tracing**: ASP.NET Core, HTTP Client, Hangfire, EF Core, Elasticsearch, Redis instrumentation
+- **Logging**: Serilog → OpenTelemetry via OTLP sink, with trace/span ID correlation
+- **Conditional Activation**: Only enabled when explicitly configured
 
-- Does this module replace an existing module/experience? If yes, what is the transition plan?
+## Prerequisites
 
-- Does this module has dependency on other ? If yes, list/explain the dependencies.
+- VirtoCommerce Platform 3.1002.0+
+- OTLP-compatible collector (e.g. [Grafana Alloy](https://grafana.com/docs/alloy/), [OpenTelemetry Collector](https://opentelemetry.io/docs/collector/), [Aspire Dashboard](https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/dashboard/overview))
 
-- List the key deployment scenarios - why would people use this module?
+## Installation
 
-## Functional Requirements
+Copy the module to your platform `modules` directory. It will be automatically discovered and loaded by VirtoCommerce Platform.
 
-Short description of the new module functional requirements.
+## Configuration
 
-## Scenarios
+Add to `appsettings.json`:
 
-List of scenarios that the new module implements
+```json
+{
+  "OpenTelemetry": {
+    "Enabled": true,
+    "Endpoint": "http://localhost:4317",
+    "ServiceName": "VirtoCommerce.Platform"
+  }
+}
+```
 
-1. [Scenario 1](/doc/scenario-name1.md)
-1. [Scenario 2](/doc/scenario-name2.md)
-1. [Scenario 3](/doc/scenario-name3.md)
-    1. [Scenario 3.1](/doc/scenario-name31.md)
-    1. [Scenario 3.2](/doc/scenario-name32.md)
-1. [Scenario 4](/doc/scenario-name4.md)
+| Key | Required | Default | Description |
+|-----|----------|---------|-------------|
+| `Enabled` | Yes | `false` | Enables the module. Set to `true` to activate. |
+| `Endpoint` | Yes | — | OTLP collector endpoint (gRPC). Required to export data. |
+| `ServiceName` | No | `VirtoCommerce.Platform` | Service name reported in telemetry. |
 
-## Web API
+Settings can also be provided via environment variables:
 
-Web API documentation for each module is built out automatically and can be accessed by following the link bellow:
-<https://link-to-swager-api>
+```
+OpenTelemetry__Enabled=true
+OpenTelemetry__Endpoint=http://collector:4317
+OpenTelemetry__ServiceName=my-store
+```
 
-## Database Model
+## What Gets Collected
 
-![DB model](./docs/media/diagram-db-model.png)
+### Metrics
 
-## Related topics
+| Source | Description |
+|--------|-------------|
+| ASP.NET Core | Request rate, duration, active connections |
+| HTTP Client | Outbound request duration and status |
+| .NET Runtime | GC, thread pool, memory |
+| Process | CPU, memory |
+| EF Core | Query counts and duration |
+| Elasticsearch | Transport-level metrics |
+| Kestrel | Connection and request metrics |
 
-[Some Article1](some-article1.md)
+### Traces
 
-[Some Article2](some-article2.md)
+| Source | Description |
+|--------|-------------|
+| ASP.NET Core | Incoming HTTP requests |
+| HTTP Client | Outbound HTTP calls |
+| EF Core | Database queries |
+| Hangfire | Background job execution |
+| Elasticsearch | Search and index operations |
+| Redis | Cache operations |
+
+### Logs
+
+Structured logs are forwarded to the OTLP endpoint via Serilog with trace/span ID fields for correlation with distributed traces.
+
+## Module Structure
+
+```
+src/
+└── VirtoCommerce.OpenTelemetry.Web/
+    ├── Module.cs                                # Module entry point
+    ├── ServiceCollectionExtensions.cs           # OTel metrics and tracing registration
+    ├── OpenTelemetryLoggerConfigurationService.cs  # Serilog → OTLP logging
+    └── VirtoCommerce.OpenTelemetry.Web.csproj
+```
+
+## Troubleshooting
+
+**Module not activating** — verify `OpenTelemetry:Enabled` is `true` in configuration.
+
+**No data exported** — verify `OpenTelemetry:Endpoint` is set and the collector is reachable.
+
+**Traces missing correlations** — ensure the collector supports OTLP gRPC on the configured endpoint.
 
 ## License
 
-Copyright (c) Virto Solutions LTD.  All rights reserved.
+Copyright (c) Virto Solutions LTD. All rights reserved.
 
-Licensed under the Virto Commerce Open Software License (the "License"); you
-may not use this file except in compliance with the License. You may
-obtain a copy of the License at
+Licensed under the Virto Commerce Open Software License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
 
-<https://virtocommerce.com/open-source-license>
+https://virtocommerce.com/open-source-license
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
-implied.
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+
