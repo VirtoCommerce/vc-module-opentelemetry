@@ -14,15 +14,15 @@ public class OpenTelemetryLoggerConfigurationService(IConfiguration configuratio
 {
     public void Configure(LoggerConfiguration loggerConfiguration)
     {
-        var endpoint  = configuration["OpenTelemetry:Endpoint"];
-        if (string.IsNullOrWhiteSpace(endpoint ))
+        var endpoint = configuration["OpenTelemetry:Endpoint"];
+        if (string.IsNullOrWhiteSpace(endpoint))
         {
             return;
         }
 
         loggerConfiguration.WriteTo.OpenTelemetry(options =>
         {
-            options.Endpoint = endpoint ;
+            options.Endpoint = endpoint;
             options.Protocol = OtlpProtocol.Grpc;
 
             // Include trace context for correlation with distributed traces
