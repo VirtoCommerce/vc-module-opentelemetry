@@ -13,10 +13,12 @@ public static class ServiceCollectionExtensions
         // Note: OpenTelemetry logging is integrated via Serilog sink (see OpenTelemetryLoggerConfigurationService)
         // This avoids duplicate logging providers and follows VirtoCommerce Platform patterns
 
-        var builder = services.AddOpenTelemetry()
+        var builder = services
+            .AddOpenTelemetry()
             .WithMetrics(metrics =>
             {
-                metrics.AddAspNetCoreInstrumentation()
+                metrics
+                    .AddAspNetCoreInstrumentation()
                     .AddHttpClientInstrumentation()
                     .AddRuntimeInstrumentation()
                     .AddProcessInstrumentation()
@@ -28,7 +30,8 @@ public static class ServiceCollectionExtensions
             })
             .WithTracing(tracing =>
             {
-                tracing.AddAspNetCoreInstrumentation()
+                tracing
+                    .AddAspNetCoreInstrumentation()
                     .AddHttpClientInstrumentation()
                     .AddHangfireInstrumentation()
                     .AddEntityFrameworkCoreInstrumentation()

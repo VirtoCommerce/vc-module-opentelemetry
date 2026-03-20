@@ -26,7 +26,8 @@ public class OpenTelemetryLoggerConfigurationService(IConfiguration configuratio
             options.Protocol = OtlpProtocol.Grpc;
 
             // Include trace context for correlation with distributed traces
-            options.IncludedData = IncludedData.TraceIdField | IncludedData.SpanIdField |
+            options.IncludedData = IncludedData.TraceIdField |
+                                   IncludedData.SpanIdField |
                                    IncludedData.MessageTemplateTextAttribute |
                                    IncludedData.MessageTemplateMD5HashAttribute;
 

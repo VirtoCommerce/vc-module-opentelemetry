@@ -5,9 +5,7 @@
   <version-tag />
 
   <platformVersion>3.1002.0</platformVersion>
-  <dependencies>
-    <!--<dependency id="VirtoCommerce.Core" version="3.800.0" />-->
-  </dependencies>
+  <dependencies />
 
   <title>Open Telemetry</title>
   <description>Provides Open Telemetry metrics, tracing, and logging via OTLP exporter</description>
@@ -20,7 +18,7 @@
   </owners>
 
   <projectUrl>https://github.com/VirtoCommerce/vc-module-opentelemetry</projectUrl>
-<requireLicenseAcceptance>false</requireLicenseAcceptance>
+  <requireLicenseAcceptance>false</requireLicenseAcceptance>
 
   <assemblyFile>VirtoCommerce.OpenTelemetry.Web.dll</assemblyFile>
   <moduleType>VirtoCommerce.OpenTelemetry.Web.Module, VirtoCommerce.OpenTelemetry.Web</moduleType>
