@@ -27,7 +27,10 @@ Add to `appsettings.json`:
   "OpenTelemetry": {
     "Enabled": true,
     "Endpoint": "http://localhost:4317",
-    "ServiceName": "VirtoCommerce.Platform"
+    "ServiceName": "VirtoCommerce.Platform",
+    "Sources": [
+      "VirtoCommerce.UCP"
+    ]
   }
 }
 ```
@@ -37,6 +40,7 @@ Add to `appsettings.json`:
 | `Enabled` | Yes | `false` | Enables the module. Set to `true` to activate. |
 | `Endpoint` | Yes | — | OTLP collector endpoint (gRPC). Required to export data. |
 | `ServiceName` | No | `VirtoCommerce.Platform` | Service name reported in telemetry. |
+| `Sources` | No | — | Additional `ActivitySource` names to collect traces from. Lets any module expose spans without referencing OpenTelemetry packages: the module names its `ActivitySource`, the deployment opts it in here. |
 
 Settings can also be provided via environment variables:
 
@@ -44,6 +48,7 @@ Settings can also be provided via environment variables:
 OpenTelemetry__Enabled=true
 OpenTelemetry__Endpoint=http://collector:4317
 OpenTelemetry__ServiceName=my-store
+OpenTelemetry__Sources__0=VirtoCommerce.UCP
 ```
 
 ## What Gets Collected
@@ -93,6 +98,8 @@ src/
 **No data exported** — verify `OpenTelemetry:Endpoint` is set and the collector is reachable.
 
 **Traces missing correlations** — ensure the collector supports OTLP gRPC on the configured endpoint.
+
+**A module's spans are missing** — `OpenTelemetry:Sources` must be a JSON array (a comma-separated string registers nothing), and each entry must match the module's `ActivitySource` name exactly.
 
 ## License
 
