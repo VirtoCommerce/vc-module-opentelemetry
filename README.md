@@ -30,6 +30,9 @@ Add to `appsettings.json`:
     "ServiceName": "VirtoCommerce.Platform",
     "Sources": [
       "VirtoCommerce.UCP"
+    ],
+    "Meters": [
+      "VirtoCommerce.UCP"
     ]
   }
 }
@@ -41,6 +44,7 @@ Add to `appsettings.json`:
 | `Endpoint` | Yes | — | OTLP collector endpoint (gRPC). Required to export data. |
 | `ServiceName` | No | `VirtoCommerce.Platform` | Service name reported in telemetry. |
 | `Sources` | No | — | Additional `ActivitySource` names to collect traces from. Lets any module expose spans without referencing OpenTelemetry packages: the module names its `ActivitySource`, the deployment opts it in here. |
+| `Meters` | No | — | Additional `Meter` names to collect metrics from. Lets any module expose metrics without referencing OpenTelemetry packages: the module names its `Meter`, the deployment opts it in here. |
 
 Settings can also be provided via environment variables:
 
@@ -49,6 +53,7 @@ OpenTelemetry__Enabled=true
 OpenTelemetry__Endpoint=http://collector:4317
 OpenTelemetry__ServiceName=my-store
 OpenTelemetry__Sources__0=VirtoCommerce.UCP
+OpenTelemetry__Meters__0=VirtoCommerce.UCP
 ```
 
 ## What Gets Collected
@@ -100,6 +105,8 @@ src/
 **Traces missing correlations** — ensure the collector supports OTLP gRPC on the configured endpoint.
 
 **A module's spans are missing** — `OpenTelemetry:Sources` must be a JSON array (a comma-separated string registers nothing), and each entry must match the module's `ActivitySource` name exactly.
+
+**A module's metrics are missing** — `OpenTelemetry:Meters` must be a JSON array (a comma-separated string registers nothing), and each entry must match the module's `Meter` name exactly.
 
 ## License
 

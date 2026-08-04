@@ -29,6 +29,12 @@ public static class ServiceCollectionExtensions
                         options.AddEventSources("Microsoft.AspNetCore.Hosting", "Microsoft-AspNetCore-Server-Kestrel");
                     })
                     .AddMeter("Microsoft.EntityFrameworkCore", "Elastic.Transport");
+
+                // Module Meters are opt-in per deployment via "OpenTelemetry:Meters".
+                foreach (var meter in GetMetricMeters(configuration))
+                {
+                    metrics.AddMeter(meter);
+                }
             })
             .WithTracing(tracing =>
             {
@@ -66,6 +72,15 @@ public static class ServiceCollectionExtensions
         return configuration.GetSection("OpenTelemetry:Sources")
             .GetChildren()
             // AddSource throws on a null/whitespace name — a stray empty config entry must not fail module init.
+            .Where(x => !string.IsNullOrWhiteSpace(x.Value))
+            .Select(x => x.Value!);
+    }
+
+    private static IEnumerable<string> GetMetricMeters(IConfiguration configuration)
+    {
+        return configuration.GetSection("OpenTelemetry:Meters")
+            .GetChildren()
+            // AddMeter throws on a null/whitespace name — a stray empty config entry must not fail module init.
             .Where(x => !string.IsNullOrWhiteSpace(x.Value))
             .Select(x => x.Value!);
     }
