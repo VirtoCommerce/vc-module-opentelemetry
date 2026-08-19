@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using OpenTelemetry;
@@ -27,6 +29,12 @@ public static class ServiceCollectionExtensions
                         options.AddEventSources("Microsoft.AspNetCore.Hosting", "Microsoft-AspNetCore-Server-Kestrel");
                     })
                     .AddMeter("Microsoft.EntityFrameworkCore", "Elastic.Transport");
+
+                // Module Meters are opt-in per deployment via "OpenTelemetry:Meters".
+                foreach (var meter in GetMetricMeters(configuration))
+                {
+                    metrics.AddMeter(meter);
+                }
             })
             .WithTracing(tracing =>
             {
@@ -42,6 +50,12 @@ public static class ServiceCollectionExtensions
                     })
                     .AddSource("Elastic.Transport")
                     .AddRedisInstrumentation();
+
+                // Module ActivitySources are opt-in per deployment via "OpenTelemetry:Sources".
+                foreach (var source in GetTracingSources(configuration))
+                {
+                    tracing.AddSource(source);
+                }
             });
 
         // Add OTLP exporter if endpoint is configured
@@ -51,5 +65,23 @@ public static class ServiceCollectionExtensions
         }
 
         return services;
+    }
+
+    private static IEnumerable<string> GetTracingSources(IConfiguration configuration)
+    {
+        return configuration.GetSection("OpenTelemetry:Sources")
+            .GetChildren()
+            // AddSource throws on a null/whitespace name — a stray empty config entry must not fail module init.
+            .Where(x => !string.IsNullOrWhiteSpace(x.Value))
+            .Select(x => x.Value!);
+    }
+
+    private static IEnumerable<string> GetMetricMeters(IConfiguration configuration)
+    {
+        return configuration.GetSection("OpenTelemetry:Meters")
+            .GetChildren()
+            // AddMeter throws on a null/whitespace name — a stray empty config entry must not fail module init.
+            .Where(x => !string.IsNullOrWhiteSpace(x.Value))
+            .Select(x => x.Value!);
     }
 }
