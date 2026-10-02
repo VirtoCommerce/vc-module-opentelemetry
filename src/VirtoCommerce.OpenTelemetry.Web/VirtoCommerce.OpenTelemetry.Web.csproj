@@ -23,6 +23,6 @@
     <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" Version="1.15.0" />
     <PackageReference Include="OpenTelemetry.Instrumentation.StackExchangeRedis" Version="1.15.0-beta.1" />
     <PackageReference Include="Serilog.Sinks.OpenTelemetry" Version="4.2.0" />
-    <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.1002.0" />
+    <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.1076.0" />
   </ItemGroup>
 </Project>
