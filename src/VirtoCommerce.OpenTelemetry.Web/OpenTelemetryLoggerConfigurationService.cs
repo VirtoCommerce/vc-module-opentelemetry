@@ -12,8 +12,18 @@ namespace VirtoCommerce.OpenTelemetry.Web;
 /// </summary>
 public class OpenTelemetryLoggerConfigurationService(IConfiguration configuration) : ILoggerConfigurationService
 {
+    // One sink for the process: the platform builds its logger more than once while it starts.
+    private static readonly object _azureMonitorLock = new();
+    private static AzureMonitorLogSink _azureMonitorSink;
+
     public void Configure(LoggerConfiguration loggerConfiguration)
     {
+        var azureMonitorConnectionString = ServiceCollectionExtensions.GetAzureMonitorConnectionString(configuration);
+        if (azureMonitorConnectionString != null)
+        {
+            loggerConfiguration.WriteTo.Sink(GetAzureMonitorSink(azureMonitorConnectionString));
+        }
+
         var endpoint = configuration["OpenTelemetry:Endpoint"];
         if (string.IsNullOrWhiteSpace(endpoint))
         {
@@ -31,11 +41,19 @@ public class OpenTelemetryLoggerConfigurationService(IConfiguration configuratio
                                    IncludedData.MessageTemplateTextAttribute |
                                    IncludedData.MessageTemplateMD5HashAttribute;
 
-            var serviceName = configuration["OpenTelemetry:ServiceName"] ?? "VirtoCommerce.Platform";
+            var serviceName = ServiceCollectionExtensions.GetServiceName(configuration);
             options.ResourceAttributes = new Dictionary<string, object>
             {
                 ["service.name"] = serviceName,
             };
         });
+    }
+
+    private AzureMonitorLogSink GetAzureMonitorSink(string connectionString)
+    {
+        lock (_azureMonitorLock)
+        {
+            return _azureMonitorSink ??= new AzureMonitorLogSink(connectionString, ServiceCollectionExtensions.GetServiceName(configuration));
+        }
     }
 }

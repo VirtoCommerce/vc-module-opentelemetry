@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
+using Azure.Monitor.OpenTelemetry.Exporter;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
 namespace VirtoCommerce.OpenTelemetry.Web;
@@ -15,8 +17,11 @@ public static class ServiceCollectionExtensions
         // Note: OpenTelemetry logging is integrated via Serilog sink (see OpenTelemetryLoggerConfigurationService)
         // This avoids duplicate logging providers and follows VirtoCommerce Platform patterns
 
+        var azureMonitorConnectionString = GetAzureMonitorConnectionString(configuration);
+
         var builder = services
             .AddOpenTelemetry()
+            .ConfigureResource(resource => resource.AddService(GetServiceName(configuration)))
             .WithMetrics(metrics =>
             {
                 metrics
@@ -34,6 +39,11 @@ public static class ServiceCollectionExtensions
                 foreach (var meter in GetMetricMeters(configuration))
                 {
                     metrics.AddMeter(meter);
+                }
+
+                if (azureMonitorConnectionString != null)
+                {
+                    metrics.AddAzureMonitorMetricExporter(options => options.ConnectionString = azureMonitorConnectionString);
                 }
             })
             .WithTracing(tracing =>
@@ -56,6 +66,11 @@ public static class ServiceCollectionExtensions
                 {
                     tracing.AddSource(source);
                 }
+
+                if (azureMonitorConnectionString != null)
+                {
+                    tracing.AddAzureMonitorTraceExporter(options => options.ConnectionString = azureMonitorConnectionString);
+                }
             });
 
         // Add OTLP exporter if endpoint is configured
@@ -65,6 +80,18 @@ public static class ServiceCollectionExtensions
         }
 
         return services;
+    }
+
+    public static string GetServiceName(IConfiguration configuration)
+    {
+        return configuration["OpenTelemetry:ServiceName"] ?? "VirtoCommerce.Platform";
+    }
+
+    // Application Insights (Azure Monitor) receives the same signals as the OTLP collector when its connection string is set.
+    public static string GetAzureMonitorConnectionString(IConfiguration configuration)
+    {
+        var connectionString = configuration["OpenTelemetry:AzureMonitor:ConnectionString"];
+        return string.IsNullOrWhiteSpace(connectionString) ? null : connectionString;
     }
 
     private static IEnumerable<string> GetTracingSources(IConfiguration configuration)

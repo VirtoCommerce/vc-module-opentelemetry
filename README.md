@@ -7,6 +7,7 @@ This module provides OpenTelemetry observability for VirtoCommerce Platform — 
 - **Metrics**: ASP.NET Core, HTTP Client, Runtime, Process, EF Core, Elasticsearch, Redis instrumentation
 - **Distributed Tracing**: ASP.NET Core, HTTP Client, Hangfire, EF Core, Elasticsearch, Redis instrumentation
 - **Logging**: Serilog → OpenTelemetry via OTLP sink, with trace/span ID correlation
+- **Application Insights**: the same traces, metrics and logs exported to Azure Monitor with the official OpenTelemetry exporter, with or without an OTLP collector
 - **Conditional Activation**: Only enabled when explicitly configured
 
 ## Prerequisites
@@ -41,7 +42,8 @@ Add to `appsettings.json`:
 | Key | Required | Default | Description |
 |-----|----------|---------|-------------|
 | `Enabled` | Yes | `false` | Enables the module. Set to `true` to activate. |
-| `Endpoint` | Yes | — | OTLP collector endpoint (gRPC). Required to export data. |
+| `Endpoint` | No | — | OTLP collector endpoint (gRPC). Required to export to a collector. |
+| `AzureMonitor:ConnectionString` | No | — | Connection string of an Application Insights resource. Exports traces, metrics and logs to it, in addition to the OTLP endpoint when both are set. |
 | `ServiceName` | No | `VirtoCommerce.Platform` | Service name reported in telemetry. |
 | `Sources` | No | — | Additional `ActivitySource` names to collect traces from. Lets any module expose spans without referencing OpenTelemetry packages: the module names its `ActivitySource`, the deployment opts it in here. |
 | `Meters` | No | — | Additional `Meter` names to collect metrics from. Lets any module expose metrics without referencing OpenTelemetry packages: the module names its `Meter`, the deployment opts it in here. |
@@ -55,6 +57,42 @@ OpenTelemetry__ServiceName=my-store
 OpenTelemetry__Sources__0=VirtoCommerce.UCP
 OpenTelemetry__Meters__0=VirtoCommerce.UCP
 ```
+
+## Application Insights
+
+Application Insights does not receive OTLP, so the module exports to it with the Azure Monitor exporter of OpenTelemetry when a connection string is set:
+
+```json
+{
+  "OpenTelemetry": {
+    "Enabled": true,
+    "ServiceName": "my-store",
+    "AzureMonitor": {
+      "ConnectionString": "InstrumentationKey=...;IngestionEndpoint=https://...in.applicationinsights.azure.com/"
+    }
+  }
+}
+```
+
+Or as an environment variable: `OpenTelemetry__AzureMonitor__ConnectionString`. Keep the connection string out of source control.
+
+| Signal | In Application Insights |
+|--------|-------------------------|
+| Incoming requests (server spans) | `requests` |
+| Database, HTTP, Redis, Elasticsearch and module spans (client and internal spans) | `dependencies` |
+| Platform logs, with the trace of their request | `traces` |
+| Exceptions | `exceptions` |
+| Metrics | `customMetrics` |
+
+`ServiceName` is the cloud role name. A request opens as one end-to-end transaction with its database calls, the spans of the modules listed in `Sources`, and its log lines. To follow one request in **Logs**:
+
+```kusto
+union requests, dependencies, traces, exceptions
+| where operation_Id == "<trace id>"
+| order by timestamp asc
+```
+
+Use either this module or the Application Insights module for a resource, not both, or every request is recorded twice.
 
 ## What Gets Collected
 
@@ -100,7 +138,7 @@ src/
 
 **Module not activating** — verify `OpenTelemetry:Enabled` is `true` in configuration.
 
-**No data exported** — verify `OpenTelemetry:Endpoint` is set and the collector is reachable.
+**No data exported** — verify `OpenTelemetry:Endpoint` is set and the collector is reachable, or that `OpenTelemetry:AzureMonitor:ConnectionString` is set. Application Insights shows new data after 1–3 minutes.
 
 **Traces missing correlations** — ensure the collector supports OTLP gRPC on the configured endpoint.
 
